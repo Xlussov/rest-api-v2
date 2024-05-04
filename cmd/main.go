@@ -5,8 +5,7 @@ import (
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-
-	"log"
+	"github.com/sirupsen/logrus"
 
 	"github.com/Xlussov/rest-api-v2"
 	"github.com/Xlussov/rest-api-v2/pkg/handler"
@@ -16,12 +15,14 @@ import (
 )
 
 func main() {
+	logrus.SetFormatter(new(logrus.JSONFormatter))
+
 	if err := initConfigs(); err != nil {
-		log.Fatalf("error initialization configs: %s", err.Error())
+		logrus.Fatalf("error initialization configs: %s", err.Error())
 	}
 
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("error loading env variables: %s", err.Error())
+		logrus.Fatalf("error loading env variables: %s", err.Error())
 	}
 
 
@@ -36,7 +37,7 @@ func main() {
 
 
 	if err != nil {
-		log.Fatalf("failed to initialize db: %s", err.Error())
+		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
 	repos := repository.NewRepository(db)
@@ -45,7 +46,7 @@ func main() {
 	
 	srv := new(restApi.Server)
 	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		log.Fatalf("error occured while running http server %s", err.Error())
+		logrus.Fatalf("error occured while running http server %s", err.Error())
 	}
 }
  
@@ -54,3 +55,4 @@ func initConfigs() error {
 	viper.SetConfigName("config")
 	return viper.ReadInConfig()
 }
+

@@ -1,8 +1,13 @@
 package service
 
-import "github.com/Xlussov/rest-api-v2/pkg/repository"
+import (
+	"github.com/Xlussov/rest-api-v2"
+	"github.com/Xlussov/rest-api-v2/pkg/repository"
+)
 
 type Authorization interface {
+	CreateUser(user restApi.User) (string, error)
+	GenerateToken(username, password string) (string, error)
 }
 
 type Service struct {
@@ -10,5 +15,7 @@ type Service struct {
 }
 
 func NewService(repos *repository.Repository) *Service {
-	return &Service{}
+	return &Service{
+		Authorization: NewAuthService(repos.Authorization),
+	}
 }
